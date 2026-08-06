@@ -86,17 +86,25 @@ class FileController
         $destination = $request->input('destination', $this->separator);
         $hardlink = (bool) $request->input('hardlink', false);
 
-        foreach ($items as $item) {
-            if ($item->type == 'dir') {
-                $hardlink
-                    ? $this->storage->hardlinkDir($item->path, $destination)
-                    : $this->storage->copyDir($item->path, $destination);
+        try {
+            foreach ($items as $item) {
+                if ($item->type == 'dir') {
+                    $hardlink
+                        ? $this->storage->hardlinkDir($item->path, $destination)
+                        : $this->storage->copyDir($item->path, $destination);
+                }
+                if ($item->type == 'file') {
+                    $hardlink
+                        ? $this->storage->hardlinkFile($item->path, $destination)
+                        : $this->storage->copyFile($item->path, $destination);
+                }
             }
-            if ($item->type == 'file') {
-                $hardlink
-                    ? $this->storage->hardlinkFile($item->path, $destination)
-                    : $this->storage->copyFile($item->path, $destination);
+        } catch (\Exception $e) {
+            if (! $hardlink) {
+                throw $e;
             }
+
+            return $response->json($e->getMessage(), 422);
         }
 
         return $response->json('Done');
