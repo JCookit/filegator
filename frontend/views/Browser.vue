@@ -366,11 +366,15 @@ export default {
         parent: this,
         hasModalCard: true,
         component: Tree,
+        props: {
+          showHardlinkOption: true,
+        },
         events: {
           selected: dir => {
             this.isLoading = true
             api.copyItems({
               destination: dir.path,
+              hardlink: dir.hardlink,
               items: item ? [item] : this.getSelected(),
             })
               .then(() => {

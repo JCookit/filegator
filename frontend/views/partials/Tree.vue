@@ -8,9 +8,12 @@
     <section class="modal-card-body">
       <div class="tree">
         <ul class="tree-list">
-          <TreeNode :node="$store.state.tree" @selected="$emit('selected', $event) && $parent.close()" />
+          <TreeNode :node="$store.state.tree" @selected="select" />
         </ul>
       </div>
+      <b-checkbox v-if="showHardlinkOption" v-model="hardlink">
+        {{ lang('Hardlink') }}
+      </b-checkbox>
     </section>
     <footer class="modal-card-foot">
       <button class="button" type="button" @click="$parent.close()">
@@ -26,6 +29,26 @@ import TreeNode from './TreeNode'
 export default {
   name: 'Tree',
   components: { TreeNode },
+  props: {
+    showHardlinkOption: {
+      type: Boolean,
+      default: false
+    },
+  },
+  data() {
+    return {
+      hardlink: false,
+    }
+  },
+  methods: {
+    select(dir) {
+      this.$emit('selected', {
+        ...dir,
+        hardlink: this.hardlink,
+      })
+      this.$parent.close()
+    },
+  },
 }
 </script>
 

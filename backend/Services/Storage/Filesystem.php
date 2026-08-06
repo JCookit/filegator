@@ -114,6 +114,79 @@ class Filesystem implements Service
         }
     }
 
+    public function hardlinkFile(string $source, string $destination)
+    {
+        $source = $this->applyPathPrefix($source);
+        $destination = $this->joinPaths($this->applyPathPrefix($destination), $this->getBaseName($source));
+
+        while ($this->storage->has($destination)) {
+            $destination = $this->upcountName($destination);
+        }
+
+        return $this->linkLocalFile($source, $destination);
+    }
+
+    public function hardlinkDir(string $source, string $destination)
+    {
+        $source = $this->applyPathPrefix($this->addSeparators($source));
+        $destination = $this->applyPathPrefix($this->addSeparators($destination));
+        $source_dir = $this->getBaseName($source);
+        $real_destination = $this->joinPaths($destination, $source_dir);
+
+        while (! empty($this->storage->listContents($real_destination, true))) {
+            $real_destination = $this->upcountName($real_destination);
+        }
+
+        $contents = $this->storage->listContents($source, true);
+
+        if (empty($contents)) {
+            return $this->storage->createDir($real_destination);
+        }
+
+        foreach ($contents as $file) {
+            $source_path = $this->separator.ltrim($file['path'], $this->separator);
+            $path = substr($source_path, strlen($source), strlen($source_path));
+            $target = $this->joinPaths($real_destination, $path);
+
+            if ($file['type'] == 'dir') {
+                $this->storage->createDir($target);
+
+                continue;
+            }
+
+            if ($file['type'] == 'file') {
+                $this->linkLocalFile($file['path'], $target);
+            }
+        }
+    }
+
+    protected function linkLocalFile(string $source, string $destination): bool
+    {
+        $adapter = $this->storage->getAdapter();
+
+        if (get_class($adapter) !== 'League\\Flysystem\\Adapter\\Local') {
+            throw new \Exception('Hardlink is only supported for local storage');
+        }
+
+        $source = $adapter->applyPathPrefix($source);
+        $destination = $adapter->applyPathPrefix($destination);
+        $parent = dirname($destination);
+
+        if (! is_dir($parent) && ! mkdir($parent, 0777, true) && ! is_dir($parent)) {
+            throw new \Exception('Unable to create hardlink destination directory');
+        }
+
+        set_error_handler(function ($severity, $message) {
+            throw new \Exception('Unable to create hardlink: '.$message);
+        });
+
+        try {
+            return link($source, $destination);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     public function deleteDir(string $path)
     {
         return $this->storage->deleteDir($this->applyPathPrefix($path));

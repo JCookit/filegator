@@ -84,13 +84,18 @@ class FileController
     {
         $items = $request->input('items', []);
         $destination = $request->input('destination', $this->separator);
+        $hardlink = (bool) $request->input('hardlink', false);
 
         foreach ($items as $item) {
             if ($item->type == 'dir') {
-                $this->storage->copyDir($item->path, $destination);
+                $hardlink
+                    ? $this->storage->hardlinkDir($item->path, $destination)
+                    : $this->storage->copyDir($item->path, $destination);
             }
             if ($item->type == 'file') {
-                $this->storage->copyFile($item->path, $destination);
+                $hardlink
+                    ? $this->storage->hardlinkFile($item->path, $destination)
+                    : $this->storage->copyFile($item->path, $destination);
             }
         }
 

@@ -26,6 +26,7 @@ const data = {
   'Size': 'Size',
   'Home': 'Home',
   'Copy': 'Copy',
+  'Hardlink': 'Hardlink',
   'Move': 'Move',
   'Rename': 'Rename',
   'Required': 'Please fill out this field',

@@ -62,6 +62,7 @@ const api = {
     return new Promise((resolve, reject) => {
       axios.post('copyitems', {
         destination: params.destination,
+        hardlink: params.hardlink,
         items: params.items,
       })
         .then(res => resolve(res.data.data))
