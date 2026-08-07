@@ -46,3 +46,86 @@ html, body, #wrapper, #inner, .container {
 		padding: 20px;
 	}
 }
+
+.browser-container {
+	max-width: none;
+	width: 100%;
+}
+
+#browser {
+	max-width: 100%;
+}
+
+.file-browser-table {
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+.file-browser-table .table {
+	width: 100%;
+}
+
+.file-browser-table .name,
+.file-browser-table .file-name-cell {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+.file-browser-table .file-actions-cell {
+	text-align: right;
+	white-space: nowrap;
+}
+
+@media all and (max-width: 768px) {
+	.container.browser-container {
+		padding: 10px;
+	}
+
+	#browser .breadcrumb {
+		min-width: 0;
+	}
+
+	#browser .breadcrumb ul {
+		flex-wrap: wrap;
+	}
+
+	#multi-actions {
+		gap: 8px;
+	}
+
+	.file-browser-table {
+		overflow-x: visible;
+	}
+
+	.file-browser-table .table {
+		table-layout: fixed;
+	}
+
+	.file-browser-table .optional-file-column {
+		display: none;
+	}
+
+	.file-browser-table .file-name-cell {
+		width: auto;
+	}
+
+	.file-browser-table .file-actions-cell {
+		width: 48px;
+		min-width: 48px;
+		max-width: 48px;
+	}
+
+	.file-browser-table .checkbox-cell,
+	.file-browser-table .is-checkbox-cell {
+		width: 42px;
+		min-width: 42px;
+		max-width: 42px;
+	}
+
+	.file-browser-table td,
+	.file-browser-table th {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+		vertical-align: middle;
+	}
+}

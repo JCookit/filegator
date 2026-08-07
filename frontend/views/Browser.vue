@@ -1,5 +1,5 @@
 <template>
-  <div id="dropzone" class="container"
+  <div id="dropzone" class="container browser-container"
        @dragover="dropZone = can('upload') && ! isLoading ? true : false"
        @dragleave="dropZone = false"
        @drop="dropZone = false"
@@ -12,7 +12,7 @@
       <b class="drop-info">{{ lang('Drop files to upload') }}</b>
     </b-upload>
 
-    <div v-if="!dropZone" class="container">
+    <div v-if="!dropZone" class="container browser-container">
       <Menu />
 
       <div id="browser">
@@ -80,6 +80,7 @@
         </section>
 
         <b-table v-if="can('read')"
+                 class="file-browser-table"
                  :data="content"
                  :default-sort="defaultSort"
                  :paginated="perPage > 0"
@@ -91,30 +92,31 @@
                  :checked-rows.sync="checked"
                  :loading="isLoading"
                  :checkable="can('batchdownload') || can('write') || can('zip')"
+                 :mobile-cards="false"
                  @contextmenu="rightClick"
         >
           <template slot-scope="props">
-            <b-table-column :label="lang('Name')" :custom-sort="sortByName" field="data.name" sortable>
+            <b-table-column cell-class="file-name-cell" header-class="file-name-cell" :label="lang('Name')" :custom-sort="sortByName" field="data.name" sortable>
               <a class="is-block name" @click="itemClick(props.row)">
                 {{ props.row.name }}
               </a>
             </b-table-column>
 
-            <b-table-column v-if="can(['write', 'chmod'])" :label="lang('Permissions')" field="data.permissions" sortable width="130">
+            <b-table-column v-if="can(['write', 'chmod'])" cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Permissions')" field="data.permissions" sortable width="130">
             <span @click="togglePermissionsView" :title="showSymbolic ? lang('Hide symbolic format') : lang('Show symbolic format')" style="font-family: monospace;cursor: pointer;">
               {{ formatPermissions(props.row.permissions, props.row.type) }}
             </span>
             </b-table-column>
 
-            <b-table-column :label="lang('Size')" :custom-sort="sortBySize" field="data.size" sortable numeric width="150">
+            <b-table-column cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Size')" :custom-sort="sortBySize" field="data.size" sortable numeric width="150">
               {{ props.row.type == 'back' || props.row.type == 'dir' ? lang('Folder') : formatBytes(props.row.size) }}
             </b-table-column>
 
-            <b-table-column :label="lang('Time')" :custom-sort="sortByTime" field="data.time" sortable numeric width="200">
+            <b-table-column cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Time')" :custom-sort="sortByTime" field="data.time" sortable numeric width="200">
               {{ props.row.time ? formatDate(props.row.time) : '' }}
             </b-table-column>
 
-            <b-table-column id="single-actions" width="51">
+            <b-table-column id="single-actions" cell-class="file-actions-cell" header-class="file-actions-cell" width="51">
               <b-dropdown v-if="props.row.type != 'back'" :disabled="checked.length > 0" aria-role="list" position="is-bottom-left">
                 <button :ref="'ref-single-action-button-'+props.row.path" slot="trigger" class="button is-small">
                   <b-icon icon="ellipsis-h" size="is-small" />
