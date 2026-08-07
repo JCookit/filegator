@@ -102,17 +102,17 @@
               </a>
             </b-table-column>
 
-            <b-table-column v-if="can(['write', 'chmod'])" cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Permissions')" field="data.permissions" sortable width="130">
+            <b-table-column v-if="can(['write', 'chmod'])" :visible="!compactFileTable" :label="lang('Permissions')" field="data.permissions" sortable width="130">
             <span @click="togglePermissionsView" :title="showSymbolic ? lang('Hide symbolic format') : lang('Show symbolic format')" style="font-family: monospace;cursor: pointer;">
               {{ formatPermissions(props.row.permissions, props.row.type) }}
             </span>
             </b-table-column>
 
-            <b-table-column cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Size')" :custom-sort="sortBySize" field="data.size" sortable numeric width="150">
+            <b-table-column :visible="!compactFileTable" :label="lang('Size')" :custom-sort="sortBySize" field="data.size" sortable numeric width="150">
               {{ props.row.type == 'back' || props.row.type == 'dir' ? lang('Folder') : formatBytes(props.row.size) }}
             </b-table-column>
 
-            <b-table-column cell-class="optional-file-column" header-class="optional-file-column" :label="lang('Time')" :custom-sort="sortByTime" field="data.time" sortable numeric width="200">
+            <b-table-column :visible="!compactFileTable" :label="lang('Time')" :custom-sort="sortByTime" field="data.time" sortable numeric width="200">
               {{ props.row.time ? formatDate(props.row.time) : '' }}
             </b-table-column>
 
@@ -202,6 +202,7 @@ export default {
       hasFilteredEntries: false,
       showAllEntries: false,
       showSymbolic: false,
+      compactFileTable: false,
     }
   },
   computed: {
@@ -250,11 +251,20 @@ export default {
     },
   },
   mounted() {
+    this.updateCompactFileTable()
+    window.addEventListener('resize', this.updateCompactFileTable)
+
     if (this.can('read')) {
       this.loadFiles()
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateCompactFileTable)
+  },
   methods: {
+    updateCompactFileTable() {
+      this.compactFileTable = window.innerWidth <= 900
+    },
     toggleHidden() {
       this.showAllEntries = !this.showAllEntries
       this.loadFiles()
