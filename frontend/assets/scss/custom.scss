@@ -1,5 +1,9 @@
+html {
+	overflow-y: auto;
+}
+
 html, body, #wrapper, #inner, .container {
-	height: 100%;
+	height: auto;
 }
 
 .container {

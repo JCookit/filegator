@@ -699,7 +699,7 @@ export default {
   padding: 0;
 }
 #browser {
-  margin: 50px auto 100px auto;
+  margin: 20px auto;
 }
 .breadcrumb a {
   font-weight: bold;
