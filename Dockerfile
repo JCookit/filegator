@@ -1,12 +1,12 @@
 #################################
 # stage builder: build and test
 #################################
-FROM php:8.3-apache-bullseye AS builder
+FROM php:8.3-apache-bookworm AS builder
 
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash -
 
 RUN apt-get update > /dev/null
-RUN apt-get install -y git libzip-dev nodejs python2 libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+RUN apt-get install -y git libzip-dev nodejs python3 libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -31,7 +31,7 @@ RUN rm README.md couscous.yml repository/.gitignore babel.config.js cypress* .en
 #################################
 # stage production
 #################################
-FROM php:8.3-apache-bullseye
+FROM php:8.3-apache-bookworm
 
 RUN apt-get update > /dev/null
 RUN apt-get install -y git libzip-dev libldap2-dev
