@@ -82,6 +82,7 @@ class FileController
 
     public function copyItems(Request $request, Response $response)
     {
+        $this->prepareLongOperation();
         $items = $request->input('items', []);
         $destination = $request->input('destination', $this->separator);
         $hardlink = (bool) $request->input('hardlink', false);
@@ -112,6 +113,7 @@ class FileController
 
     public function moveItems(Request $request, Response $response)
     {
+        $this->prepareLongOperation();
         $items = $request->input('items', []);
         $destination = $request->input('destination', $this->separator);
 
@@ -127,6 +129,7 @@ class FileController
 
     public function zipItems(Request $request, Response $response, ArchiverInterface $archiver)
     {
+        $this->prepareLongOperation();
         $items = $request->input('items', []);
         $destination = $request->input('destination', $this->separator);
         $name = $request->input('name', $this->config->get('frontend_config.default_archive_name'));
@@ -149,6 +152,7 @@ class FileController
 
     public function unzipItem(Request $request, Response $response, ArchiverInterface $archiver)
     {
+        $this->prepareLongOperation();
         $source = $request->input('item');
         $destination = $request->input('destination', $this->separator);
 
@@ -159,6 +163,7 @@ class FileController
     
     public function chmodItems(Request $request, Response $response)
     {
+        $this->prepareLongOperation();
         $items = $request->input('items', []);
         $permissions = $request->input('permissions', 0);
         /** @var null|'all'|'folders'|'files' */
@@ -184,6 +189,7 @@ class FileController
 
     public function deleteItems(Request $request, Response $response)
     {
+        $this->prepareLongOperation();
         $items = $request->input('items', []);
 
         foreach ($items as $item) {
@@ -196,6 +202,14 @@ class FileController
         }
 
         return $response->json('Done');
+    }
+
+    protected function prepareLongOperation()
+    {
+        $seconds = filter_var(getenv('FILEGATOR_OPERATION_TIMEOUT') ?: 3600, FILTER_VALIDATE_INT);
+        set_time_limit(max(30, min(86400, $seconds ?: 3600)));
+        // Release the session lock so status polling can continue during a copy.
+        $this->session->save();
     }
 
     public function saveContent(Request $request, Response $response)

@@ -14,6 +14,7 @@
 
     <div v-if="!dropZone" class="container browser-container">
       <Menu />
+      <TransferStatus v-if="is('admin')" />
 
       <div id="browser">
         <div v-if="can('read')" class="is-flex is-justify-between">
@@ -174,6 +175,7 @@
 <script>
 import Vue from 'vue'
 import Menu from './partials/Menu'
+import TransferStatus from './partials/TransferStatus'
 import Tree from './partials/Tree'
 import Permissions from './partials/Permissions'
 import Editor from './partials/Editor'
@@ -189,7 +191,7 @@ Vue.use(VueClipboard)
 
 export default {
   name: 'Browser',
-  components: { Menu, Pagination, Upload },
+  components: { Menu, Pagination, Upload, TransferStatus },
   data() {
     return {
       dropZone: false,

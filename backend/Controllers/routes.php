@@ -2,6 +2,11 @@
 
 return [
     [
+        'route' => ['GET', '/transferstatus', '\\Filegator\\Controllers\\TransferController@status'],
+        'roles' => ['admin'],
+        'permissions' => [],
+    ],
+    [
         'route' => [
             'GET', '/', '\Filegator\Controllers\ViewController@index',
         ],

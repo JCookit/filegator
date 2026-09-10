@@ -41,6 +41,7 @@ RUN docker-php-ext-install zip ldap mysqli
 RUN docker-php-ext-enable zip ldap
 
 COPY --from=builder /var/www/filegator /var/www/filegator
+RUN printf 'Timeout 3600\n' > /etc/apache2/conf-enabled/filegator-timeout.conf
 RUN chown -R www-data:www-data /var/www/filegator/
 WORKDIR "/var/www/filegator/"
 RUN chmod -R g+w private/
